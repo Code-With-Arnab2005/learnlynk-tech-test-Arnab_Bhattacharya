@@ -17,8 +17,7 @@ create table if not exists public.leads (
   updated_at timestamptz not null default now()
 );
 
--- TODO: add useful indexes for leads:
--- - by tenant_id, owner_id, stage, created_at
+-- adding index for leads table
 create index if not exists idx_leads_tenant_id on public.leads(tenant_id);
 create index if not exists idx_leads_owner_id on public.leads(owner_id);
 create index if not exists idx_leads_stage on public.leads(stage);
@@ -38,8 +37,7 @@ create table if not exists public.applications (
   updated_at timestamptz not null default now()
 );
 
--- TODO: add useful indexes for applications:
--- - by tenant_id, lead_id, stage
+-- adding index for applications table
 create index if not exists idx_applications_tenant_id on public.applications(tenant_id);
 create index if not exists idx_applications_lead_id on public.applications(lead_id);
 create index if not exists idx_applications_stage on public.applications(stage);
@@ -58,18 +56,16 @@ create table if not exists public.tasks (
   updated_at timestamptz not null default now()
 );
 
--- TODO:
--- - add check constraint for type in ('call','email','review')
+-- adding constraints
 alter table public.tasks
   add constraint tasks_type_check
   check(type in ('call', 'email', 'review'));
 
--- - add constraint that due_at >= created_at
 alter table public.tasks
   add constraint tasks_due_at_check
   check(due_at >= created_at);
 
--- - add indexes for tasks due today by tenant_id, due_at, status
+-- adding index for tasks table
 create index if not exists idx_tasks_tenant_id on public.tasks(tenant_id);
 create index if not exists idx_tasks_due_at on public.tasks(due_at);
 create index if not exists idx_tasks_status on public.tasks(status);

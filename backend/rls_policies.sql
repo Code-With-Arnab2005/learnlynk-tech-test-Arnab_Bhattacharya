@@ -2,18 +2,10 @@
 
 alter table public.leads enable row level security;
 
--- Example helper: assume JWT has tenant_id, user_id, role.
--- You can use: current_setting('request.jwt.claims', true)::jsonb
-
--- TODO: write a policy so:
--- - counselors see leads where they are owner_id OR in one of their teams
--- - admins can see all leads of their tenant
-
-
--- Example skeleton for SELECT (replace with your own logic):
-
+-- Leads Select policy
 alter table public.leads add column team_id uuid; -- adding team_id column to leads table for leads_select_policy
--- created user_teams table for writing the select policy
+
+-- creating user_teams table for writing the select policy
 create table if not exists public.user_teams (
     user_id uuid not null,
     team_id uuid not null,
@@ -24,7 +16,6 @@ create policy "leads_select_policy"
 on public.leads
 for select
 using (
-  -- TODO: add real RLS logic here, refer to README instructions
   --admins can see all leads of their tenant
   (current_setting('request.jwt.claims', true)::jsonb ->> 'role' = 'admin'
   and tenant_id = (current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::uuid)
@@ -43,9 +34,7 @@ using (
   ))
 );
 
--- TODO: add INSERT policy that:
--- - allows counselors/admins to insert leads for their tenant
--- - ensures tenant_id is correctly set/validated
+-- -- Leads Insert policy
 create policy "leads_insert_policy"
 on public.leads
 for insert

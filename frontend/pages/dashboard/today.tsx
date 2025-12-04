@@ -19,11 +19,7 @@ export default function TodayDashboard() {
     setError(null);
 
     try {
-      // TODO:
-      // - Query tasks that are due today and not completed
-      // - Use supabase.from("tasks").select(...)
-      // - You can do date filtering in SQL or client-side
-
+      // fetching the tasks that are due today and not completed
       const today = new Date().toISOString().split("T")[0];
 
       const { data, error } = await supabase
@@ -45,9 +41,7 @@ export default function TodayDashboard() {
 
   async function markComplete(id: string) {
     try {
-      // TODO:
-      // - Update task.status to 'completed'
-      // - Re-fetch tasks or update state optimistically
+      // mark as complete functionality
       const { error } = await supabase
         .from("tasks")
         .update({ status: "completed" })

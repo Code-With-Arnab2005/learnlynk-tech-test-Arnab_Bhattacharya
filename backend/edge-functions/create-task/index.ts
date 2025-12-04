@@ -31,9 +31,7 @@ serve(async (req: Request) => {
     const body = (await req.json()) as Partial<CreateTaskPayload>;
     const { application_id, task_type, due_at } = body;
 
-    // TODO: validate application_id, task_type, due_at
-    // - check task_type in VALID_TYPES
-    // - parse due_at and ensure it's in the future
+    // validation of application_id, task_type, due_at
     if(!application_id) {
       return new Response(JSON.stringify({ error: "Application id is requried" }), { status: 400, headers: { "Content-Type": "application/json" }});
     }
@@ -46,14 +44,7 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "due_at must be a valid and future timestamp" }), { status: 400, headers: { "Content-Type": "application/json" }});
     }
 
-    // TODO: insert into tasks table using supabase client
-
-    // Example:
-    // const { data, error } = await supabase
-    //   .from("tasks")
-    //   .insert({ ... })
-    //   .select()
-    //   .single();
+    // Inserting into tasks table
     const { data, error } = await supabase
       .from("tasks")
       .insert({
@@ -64,17 +55,12 @@ serve(async (req: Request) => {
       .select()
       .single();
 
-    // TODO: handle error and return appropriate status code
+    // return error if occurs
     if(error){
       return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
     }
 
-    // Example successful response:
-    // return new Response(JSON.stringify({ success: true, task_id: data.id }), {
-    //   status: 200,
-    //   headers: { "Content-Type": "application/json" },
-    // });
-
+    // return success response
     return new Response(JSON.stringify({ success: true, task_id: data.id }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
