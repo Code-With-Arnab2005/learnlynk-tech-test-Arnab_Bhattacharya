@@ -34,6 +34,17 @@ serve(async (req: Request) => {
     // TODO: validate application_id, task_type, due_at
     // - check task_type in VALID_TYPES
     // - parse due_at and ensure it's in the future
+    if(!application_id) {
+      return new Response(JSON.stringify({ error: "Application id is requried" }), { status: 400, headers: { "Content-Type": "application/json" }});
+    }
+
+    if(!task_type || !VALID_TYPES.includes(task_type)){
+      return new Response(JSON.stringify({ error: "Invalid task type" }), { status: 400, headers: { "Content-Type": "application/json" }});
+    }
+
+    if(!due_at || new Date(due_at) <= new Date()){
+      return new Response(JSON.stringify({ error: "due_at must be a valid and future timestamp" }), { status: 400, headers: { "Content-Type": "application/json" }});
+    }
 
     // TODO: insert into tasks table using supabase client
 
@@ -43,8 +54,20 @@ serve(async (req: Request) => {
     //   .insert({ ... })
     //   .select()
     //   .single();
+    const { data, error } = await supabase
+      .from("tasks")
+      .insert({
+        application_id,
+        type: task_type,
+        due_at
+      })
+      .select()
+      .single();
 
     // TODO: handle error and return appropriate status code
+    if(error){
+      return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
+    }
 
     // Example successful response:
     // return new Response(JSON.stringify({ success: true, task_id: data.id }), {
@@ -52,10 +75,11 @@ serve(async (req: Request) => {
     //   headers: { "Content-Type": "application/json" },
     // });
 
-    return new Response(
-      JSON.stringify({ error: "Not implemented. Please complete this function." }),
-      { status: 501, headers: { "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ success: true, task_id: data.id }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+
   } catch (err) {
     console.error(err);
     return new Response(JSON.stringify({ error: "Internal server error" }), {
