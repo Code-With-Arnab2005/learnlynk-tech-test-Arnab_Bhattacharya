@@ -166,7 +166,15 @@ Write **8–12 lines** describing how you would implement a Stripe Checkout flow
 
 Good luck.
 
+## Notes / Assumptions
+
+1. In the Task 2, where I have to write the RLS policies, the README did not mention a user_teams table, so I created a new table user_teams and added a new column to the leads table that is team_id, to efficiently implement the leads_select_policy.
+2. In the Task 4, frontend styling could be improved, but the main focus of this task was to implement the correct logic for fetching tasks due today and marking them as complete functionality, so I prioritized the functionality over styling.
+3. I have created a new Supabase project and ran the SQL code I have written for all the tasks, and that works absolutely fine.
+4. Finally I want to say, after completing these tasks, I got a better understanding of Supabase RLS policies and edge functions.
+
 ## Stripe Answer
+
 To implement Stripe Checkout for an application fee I would follow this flow:
 1. First I will insert a row into the payment_request table when a user chooses to pay for an application, and will store the application_id, amount and status as "pending".
 2. After creating this I will call the Stripe's API from the backend to create a Checkout session and include the payment_requests.id in the metadata so the webhook can map the record for later uses.
